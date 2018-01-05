@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="./bootstrap.min.css">
+
+
+<meta charset="ISO-8859-1">
+<title>Create Test Case</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="./testCases.html">Talentify Web
+			Clients</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item "><a class="nav-link"
+					href="./testCases.html">Home </a></li>
+				<li class="nav-item active"><a class="nav-link" href="#">Test
+						Case <span class="sr-only">(current)</span>
+				</a></li>
+				<li class="nav-item"><a class="nav-link disabled"
+					href="./result.html">Result</a></li>
+			</ul>
+			<form class="form-inline my-2 my-lg-0">
+				<input class="form-control mr-sm-2" type="search"
+					placeholder="Search" aria-label="Search">
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			</form>
+		</div>
+	</nav>
+	<div class="jumbotron">
+		<div class="form-group row">
+			<label for="name" class="col-sm-2 col-form-label">Web Service
+				Name:</label>
+			<div class="col-sm-10">
+				<input type="text" id="name" name="test_case_name"
+					class="form-control">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="type" class="col-sm-2 col-form-label">Web Service
+				Type:</label>
+			<div class="col-sm-10">
+				<select id="type" name="test_case_type" class="form-control">
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="baseURL" class="col-sm-2 col-form-label">Web
+				Service baseURL:</label>
+			<div class="col-sm-10">
+				<input type="url" id="baseURL" name="test_case_baseURL"
+					class="form-control">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="relativeURL" class="col-sm-2 col-form-label">Web
+				Service relativeURL:</label>
+			<div class="col-sm-10">
+				<input type="text" id="relativeURL" name="test_case_relativeURL"
+					class="form-control">
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="body" class="col-sm-2 col-form-label">Body of Web
+				Service:</label>
+			<div class="col-sm-10">
+				<textarea id="body" name="test_case_body" class="form-control"></textarea>
+			</div>
+		</div>
+		<div class="form-group row">
+			<button id="submit" class="btn btn-primary mb-2">Submit</button>
+		</div>
+	</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript">
+	var creationMode = 'new';
+	var id;
+	$(document).ready(function() {
+		id = getUrlParameter('id');
+		if (id === undefined)
+			console.log('New Creation Mode');
+		else {
+			//alert(id);
+			creationMode = 'old';
+			$.get('./ReadTestCase?id=' + id, function(data) {
+				data = JSON.parse(data);
+				$('#name').val(data.name);
+				$('#type').val(data.type);
+				$('#baseURL').val(data.baseURL);
+				$('#relativeURL').val(data.relativeURL);
+				$('#body').val(data.body);
+			});
+		}
+		// check for undefined and do some action
+		$("#submit").click(function() {
+
+			var data = {};
+			data.name = $("#name").val();
+			data.type = $("#type").val();
+			data.baseURL = $("#baseURL").val();
+			data.relativeURL = $("#relativeURL").val();
+			data.body = $("#body").val();
+			if (creationMode == 'new') {
+				$.ajax({
+					type : "POST",
+					url : "/TalentifyClient/CreateXML",
+					data : data,
+					success : function(data) {
+						alert("finished");
+					},
+					dataType : "application/json"
+				});
+			} else {
+				data.id = id;
+				$.ajax({
+					type : "POST",
+					url : "/TalentifyClient/UpdateXML",
+					data : data,
+					success : function(data) {
+						location.reload();
+					},
+					dataType : "application/json"
+				});
+			}
+		});
+	});
+	var getUrlParameter = function getUrlParameter(sParam) {
+		var sPageURL = decodeURIComponent(window.location.search.substring(1)), sURLVariables = sPageURL
+				.split('&'), sParameterName, i;
+
+		for (i = 0; i < sURLVariables.length; i++) {
+			sParameterName = sURLVariables[i].split('=');
+
+			if (sParameterName[0] === sParam) {
+				return sParameterName[1] === undefined ? true
+						: sParameterName[1];
+			}
+		}
+	};
+</script>
+</html>

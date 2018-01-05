@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="./bootstrap.min.css">
+
+
+<meta charset="ISO-8859-1">
+<title>Test Cases</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">Talentify Web Clients</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active"><a class="nav-link" href="#">Home
+						<span class="sr-only">(current)</span>
+				</a></li>
+				<li class="nav-item"><a class="nav-link" href="./testCase.html">Test
+						Case</a></li>
+				<li class="nav-item"><a class="nav-link disabled"
+					href="./result.html">Result</a></li>
+			</ul>
+			<!-- <form class="form-inline my-2 my-lg-0">
+				<input class="form-control mr-sm-2" type="search"
+					placeholder="Search" aria-label="Search">
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			</form> -->
+		</div>
+	</nav>
+	<div class="jumbotron">
+		<button class="btn btn-outline-success" type="submit" id='execute'>Execute</button>
+		<div class="list-group">
+			<a href="./testCase.html?id=1"
+				class="list-group-item list-group-item-action flex-column align-items-start">
+				<div class="d-flex w-100 justify-content-between">
+					<h5 class="mb-1">List group item heading</h5>
+					<small>3 days ago</small>
+				</div>
+				<p class="mb-1">Donec id elit non mi porta gravida at eget
+					metus. Maecenas sed diam eget risus varius blandit.</p> <small>Donec
+					id elit non mi porta.</small>
+			</a>
+		</div>
+	</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+						$
+								.get(
+										'./ReadTestCases',
+										function(data) {
+											var innerHTML = '';
+											$
+													.each(
+															JSON.parse(data),
+															function(index,
+																	value) {
+																innerHTML += "<a data-testid= "
+																		+ value.id
+																		+ " href='./testCase.html?id="
+																		+ value.id;
+																innerHTML += "'class='list-group-item list-group-item-action flex-column align-items-start'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>";
+																innerHTML += value.name
+																		+ "</h5><small>id: "
+																		+ value.id
+																		+ "</small></div><p class='mb-1'>"
+																		+ value.type
+																		+ "</p> <small>"
+																		+ value.baseURL
+																		+ value.relativeURL
+																		+ "</small></a>";
+															});
+											$('.list-group').html(innerHTML);
+										});
+
+						$(".list-group").on("click", ".list-group-item-action",
+								function customClick(event) {
+									event.preventDefault();
+									if ($(this).hasClass('active'))
+										$(this).removeClass('active');
+									else
+										$(this).addClass('active');
+								});
+						$('#execute')
+								.click(
+										function(event) {
+											var ids = '';
+											$('.list-group-item')
+													.each(
+															function(index,
+																	value) {
+																if ($(value)
+																		.hasClass(
+																				'active'))
+																	ids += $(
+																			value)
+																			.attr(
+																					'data-testid')
+																			+ ',';
+															});
+											ids = ids.substring(0,
+													ids.length - 1);
+											var win = window.open(
+													'./result.html?id=' + ids,
+													'_blank');
+											if (win) {
+												//Browser has allowed it to be opened
+												win.focus();
+											} else {
+												//Browser has blocked it
+												alert('Please allow popups for this website');
+											}
+										});
+					});
+</script>
+</html>
