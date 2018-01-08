@@ -1,29 +1,35 @@
 package XMLCreation;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import requestPOJO.Request;
-import requestPOJO.RequestURL;
+import contants.TalentifyClientsConstants;
 import resonsePOJO.Response;
+import services.TestSuiteServices;
+import testCasePOJO.TestCase;
+import testCasePOJO.TestCaseURL;
+import testCasePOJO.TestSuite;
 
 public class XMLServices {
 
 	public int createXML(String body, String name, String type, String baseURL, String relativeURL) {
 
-		Request request = new Request();
+		TestCase request = new TestCase();
 		request.setBody(body);
 		int id = getMaxId() + 1;
 		request.setId(id);
 		request.setName(name);
 		request.setType(type);
-		RequestURL url = new RequestURL();
+		TestCaseURL url = new TestCaseURL();
 		url.setBaseURL(baseURL);
 		url.setRelativeURL(relativeURL);
 		request.setUrl(url);
@@ -31,11 +37,11 @@ public class XMLServices {
 		return id;
 	}
 
-	private void writeRequestXML(Request request, int id) {
+	private void writeRequestXML(TestCase request, int id) {
 		try {
 
-			File file = new File(contants.Constants.RequestXMLPath + id + ".xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(Request.class);
+			File file = new File(contants.TalentifyClientsConstants.RequestXMLPath + id + ".xml");
+			JAXBContext jaxbContext = JAXBContext.newInstance(TestCase.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed
@@ -51,7 +57,7 @@ public class XMLServices {
 
 	public int getMaxId() {
 		int maxID = 0;
-		File folder = new File(contants.Constants.RequestXMLPath);
+		File folder = new File(contants.TalentifyClientsConstants.RequestXMLPath);
 		File[] listFiles = folder.listFiles();
 		for (File XMLFile : listFiles) {
 			int parseInt = 0;
@@ -67,15 +73,15 @@ public class XMLServices {
 		return maxID;
 	}
 
-	public Request readRequestXML(int id) throws JAXBException {
-		File file = new File(contants.Constants.RequestXMLPath + id + ".xml");
-		JAXBContext context = JAXBContext.newInstance(Request.class);
+	public TestCase readRequestXML(int id) throws JAXBException {
+		File file = new File(contants.TalentifyClientsConstants.RequestXMLPath + id + ".xml");
+		JAXBContext context = JAXBContext.newInstance(TestCase.class);
 		Unmarshaller unmarshaller = context.createUnmarshaller();
-		Request testCase = (Request) unmarshaller.unmarshal(file);
+		TestCase testCase = (TestCase) unmarshaller.unmarshal(file);
 		return testCase;
 	}
 
-	public JSONObject jsonify(Request testCase) {
+	public JSONObject jsonify(TestCase testCase) {
 		JSONObject testCaseObject = new JSONObject();
 		testCaseObject.put("id", testCase.getId());
 		testCaseObject.put("type", testCase.getType());
@@ -97,7 +103,7 @@ public class XMLServices {
 	}
 
 	public void updateXML(int id, String body, String name, String type, String baseURL, String relativeURL) {
-		Request testCaseObject = null;
+		TestCase testCaseObject = null;
 		try {
 			testCaseObject = readRequestXML(id);
 		} catch (JAXBException e) {
@@ -108,7 +114,7 @@ public class XMLServices {
 			testCaseObject.setBody(body);
 			testCaseObject.setName(name);
 			testCaseObject.setType(type);
-			RequestURL url = testCaseObject.getUrl();
+			TestCaseURL url = testCaseObject.getUrl();
 			url.setBaseURL(baseURL);
 			url.setRelativeURL(relativeURL);
 			testCaseObject.setUrl(url);
@@ -119,7 +125,8 @@ public class XMLServices {
 	public void writeResponseXML(Response testCaseResponse) {
 		try {
 
-			File file = new File(contants.Constants.ResponseXMLPath + testCaseResponse.getTestCaseId() + ".xml");
+			File file = new File(
+					contants.TalentifyClientsConstants.ResponseXMLPath + testCaseResponse.getTestCaseId() + ".xml");
 			JAXBContext jaxbContext = JAXBContext.newInstance(Response.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
@@ -132,6 +139,32 @@ public class XMLServices {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public JSONArray readTestSuites() throws JAXBException, JSONException, UnsupportedEncodingException {
+		TestSuiteServices services = new TestSuiteServices();
+		JSONArray testSuiteJsonArray = new JSONArray();
+		File testSuiteFolder = new File(TalentifyClientsConstants.TestSuitePath);
+		JAXBContext context = JAXBContext.newInstance(TestSuite.class);
+		for (File testSuiteFile : testSuiteFolder.listFiles()) {
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			TestSuite suite = (TestSuite) unmarshaller.unmarshal(testSuiteFile);
+			JSONObject testSuiteJsonObject = new JSONObject();
+			testSuiteJsonObject.put("id", suite.getId());
+			testSuiteJsonObject.put("name", suite.getName());
+			JSONArray testCasesJsons = new JSONArray();
+			for (TestCase testCase : suite.getTestCase()) {
+				JSONObject testCaseJsonObject = new JSONObject();
+				testCaseJsonObject.put("name", testCase.getName());
+				testCaseJsonObject.put("URL", testCase.getUrl());
+				testCaseJsonObject.put("body",
+						services.getBody(testCase, services.getRuntimeVariablesConstants(suite)));
+				testCasesJsons.put(testCaseJsonObject);
+			}
+			testSuiteJsonObject.put("testCases", testCasesJsons);
+			testSuiteJsonArray.put(testSuiteJsonObject);
+		}
+		return testSuiteJsonArray;
 	}
 
 }

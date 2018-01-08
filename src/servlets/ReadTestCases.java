@@ -14,7 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import XMLCreation.XMLServices;
-import requestPOJO.Request;
+import testCasePOJO.TestCase;
 
 /**
  * Servlet implementation class ReadTestCases
@@ -41,9 +41,9 @@ public class ReadTestCases extends HttpServlet {
 		JSONArray responseArray = new JSONArray();
 		XMLServices creationServices = new XMLServices();
 		int maxId = creationServices.getMaxId();
-		List<Request> testCases = new ArrayList<>();
+		List<TestCase> testCases = new ArrayList<>();
 		for (int i = 1; i <= maxId; i++) {
-			Request testCase = null;
+			TestCase testCase = null;
 			try {
 				testCase = creationServices.readRequestXML(i);
 			} catch (Exception e) {
@@ -52,7 +52,7 @@ public class ReadTestCases extends HttpServlet {
 			if (testCase != null)
 				testCases.add(testCase);
 		}
-		for (Request testCase : testCases) {
+		for (TestCase testCase : testCases) {
 			JSONObject testCaseObject = creationServices.jsonify(testCase);
 			responseArray.put(testCaseObject);
 		}

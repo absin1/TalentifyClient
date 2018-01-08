@@ -7,21 +7,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import XMLCreation.XMLServices;
-import requestPOJO.Request;
 import resonsePOJO.Response;
+import testCasePOJO.TestCase;
 
 public class TestCaseServices {
 	private final String USER_AGENT = "Internal";
 
 	public String runTestCaseById(int id) throws Exception {
 		XMLServices xmlServices = new XMLServices();
-		Request testCaseRequest = xmlServices.readRequestXML(id);
+		TestCase testCaseRequest = xmlServices.readRequestXML(id);
 		Response testCaseResponse = runTestCase(testCaseRequest);
 		xmlServices.writeResponseXML(testCaseResponse);
 		return xmlServices.jsonify(testCaseResponse);
 	}
 
-	public Response runTestCase(Request testCaseRequest) throws Exception {
+	public Response runTestCase(TestCase testCaseRequest) throws Exception {
 		Response testCaseResponse = new Response();
 		long startTime = System.currentTimeMillis();
 		switch (testCaseRequest.getType()) {
@@ -47,7 +47,7 @@ public class TestCaseServices {
 	}
 
 	// HTTP GET request
-	public void sendGet(Request testCaseRequest, Response testCaseResponse) throws Exception {
+	public void sendGet(TestCase testCaseRequest, Response testCaseResponse) throws Exception {
 
 		String url = "http://localhost:8080/t2c/user/174/complex";
 
@@ -79,7 +79,7 @@ public class TestCaseServices {
 		testCaseResponse.setStatus(responseCode);
 	}
 
-	public void sendPost(Request testCaseRequest, Response testCaseResponse) throws Exception {
+	public void sendPost(TestCase testCaseRequest, Response testCaseResponse) throws Exception {
 		URL obj = new URL(testCaseRequest.getFullURL());
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		// add reuqest header
@@ -114,7 +114,7 @@ public class TestCaseServices {
 		testCaseResponse.setStatus(responseCode);
 	}
 
-	public void sendPut(Request testCaseRequest, Response testCaseResponse) throws Exception {
+	public void sendPut(TestCase testCaseRequest, Response testCaseResponse) throws Exception {
 
 		URL obj = new URL(testCaseRequest.getFullURL());
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();

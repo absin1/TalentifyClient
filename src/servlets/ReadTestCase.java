@@ -14,7 +14,7 @@ import javax.xml.bind.JAXBException;
 import org.json.JSONObject;
 
 import XMLCreation.XMLServices;
-import requestPOJO.Request;
+import testCasePOJO.TestCase;
 
 /**
  * Servlet implementation class ReadTestCase
@@ -39,7 +39,7 @@ public class ReadTestCase extends HttpServlet {
 			throws ServletException, IOException {
 		XMLServices creationServices = new XMLServices();
 		int id = Integer.parseInt(request.getParameter("id"));
-		Request testCase = null;
+		TestCase testCase = null;
 		try {
 			testCase = creationServices.readRequestXML(id);
 		} catch (JAXBException e) {

@@ -1,4 +1,4 @@
-package requestPOJO;
+package testCasePOJO;
 
 import java.io.File;
 
@@ -28,9 +28,9 @@ public class Test {
 
 	private static void factory(String path) throws JAXBException {
 		File file = new File(XMLPath + path);
-		JAXBContext context = JAXBContext.newInstance(Request.class);
+		JAXBContext context = JAXBContext.newInstance(TestCase.class);
 		Unmarshaller unmarshaller = context.createUnmarshaller();
-		Request testCase = (Request) unmarshaller.unmarshal(file);
+		TestCase testCase = (TestCase) unmarshaller.unmarshal(file);
 		switch (testCase.getType()) {
 		case "POST":
 			try {
@@ -63,7 +63,7 @@ public class Test {
 	}
 
 	private static void resetPasswordPUT() {
-		Request request = new Request();
+		TestCase request = new TestCase();
 		String body = "userId=777&password=test123";
 
 		request.setBody(body);
@@ -73,7 +73,7 @@ public class Test {
 		request.setName(name);
 		String type = "PUT";
 		request.setType(type);
-		RequestURL url = new RequestURL();
+		TestCaseURL url = new TestCaseURL();
 		String baseURL = "http://localhost:8080/";
 		url.setBaseURL(baseURL);
 		String relativeURL = "t2c/user/password/reset";
@@ -82,7 +82,7 @@ public class Test {
 		try {
 
 			File file = new File("C:\\Users\\absin\\Downloads\\request2.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(Request.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(TestCase.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed
@@ -98,7 +98,7 @@ public class Test {
 
 	public static void loginPOST() {
 
-		Request request = new Request();
+		TestCase request = new TestCase();
 		String body = "email=abhinav1@istarindia.com&password=test123";
 		request.setBody(body);
 		int id = 1;
@@ -107,7 +107,7 @@ public class Test {
 		request.setName(name);
 		String type = "POST";
 		request.setType(type);
-		RequestURL url = new RequestURL();
+		TestCaseURL url = new TestCaseURL();
 		String baseURL = "http://localhost:8080/";
 		url.setBaseURL(baseURL);
 		String relativeURL = "t2c/auth/login";
@@ -118,7 +118,7 @@ public class Test {
 		try {
 
 			File file = new File("C:\\Users\\absin\\Downloads\\request1.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(Request.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(TestCase.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed
