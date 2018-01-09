@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import contants.TalentifyClientsConstants;
+import resultPOJO.TestCaseResult;
 import testCasePOJO.Evaluator;
 import testCasePOJO.MapElements;
 import testCasePOJO.PossibleRuntimeVariables;
@@ -31,57 +32,60 @@ import testCasePOJO.TestCase;
 import testCasePOJO.TestSuite;
 
 public class TestSuiteServices {
-	public void runTestSuite(TestSuite testSuite, String threadName) throws Exception {
+	public void runTestSuite(TestSuite testSuite, TestCaseResult caseResult) throws Exception {
 		HashMap<String, String> runtimes = getRuntimeVariablesConstants(testSuite);
-		HashMap<String, String> response = new HashMap<>();
-		String runTestCaseOutput = "";
 		for (TestCase testCase : testSuite.getTestCase()) {
-			runTestCaseOutput = runTestCase(testCase, runtimes);
+			runTestCase(testCase, runtimes, caseResult);
 		}
-		response.put(threadName, runTestCaseOutput);
-		testSuite.setResponse(response);
 	}
 
 	public HashMap<String, String> getRuntimeVariablesConstants(TestSuite testSuite) {
 		HashMap<String, String> runtimes = new HashMap<>();
 		RuntimeConstants runtimeConstant = testSuite.getRuntimeConstant();
 		RuntimeVariables runtimeVariable = testSuite.getRuntimeVariable();
-		for (MapElements iterable_element : runtimeConstant.getConstants()) {
-			runtimes.put(iterable_element.key, iterable_element.value);
+		try {
+			for (MapElements iterable_element : runtimeConstant.getConstants()) {
+				runtimes.put(iterable_element.key, iterable_element.value);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		for (MapElements iterable_element : runtimeVariable.getVars()) {
-			runtimes.put(iterable_element.key, new PossibleRuntimeVariables().executeVariable(iterable_element.value));
+		try {
+			for (MapElements iterable_element : runtimeVariable.getVars()) {
+				runtimes.put(iterable_element.key,
+						new PossibleRuntimeVariables().executeVariable(iterable_element.value));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return runtimes;
 	}
 
-	private String runTestCase(TestCase testCase, HashMap<String, String> runtimes) throws Exception {
-		String output = "";
+	private void runTestCase(TestCase testCase, HashMap<String, String> runtimes, TestCaseResult caseResult)
+			throws Exception {
 		long startTime = System.currentTimeMillis();
 		String response = null;
 		switch (testCase.getType()) {
 		case "POST":
-			response = sendPost(testCase, runtimes, output);
+			response = sendPost(testCase, runtimes, caseResult);
 			break;
 		case "GET":
-			response = sendGet(testCase, output);
+			response = sendGet(testCase, caseResult);
 			break;
 		case "PUT":
-			response = sendPut(testCase, runtimes, output);
+			response = sendPut(testCase, runtimes, caseResult);
 			break;
 
 		default:
 			System.out.println("This request method " + testCase.getType() + " has no implementation till now");
 			break;
 		}
-		evaluate(testCase, response, runtimes, output);
+		evaluate(testCase, response, runtimes);
 		long endTime = System.currentTimeMillis();
-		output += "\n The time taken by the test suite on this particular thread was " + (endTime - startTime)
-				+ " milliseconds";
-		return output;
+		caseResult.setTimeTaken((endTime - startTime));
 	}
 
-	private void evaluate(TestCase testCase, String response, HashMap<String, String> runtimes, String output) {
+	private void evaluate(TestCase testCase, String response, HashMap<String, String> runtimes) {
 		JsonParser jsonParser = new JsonParser();
 		JsonElement responseElement = jsonParser.parse(response);
 		try {
@@ -180,8 +184,7 @@ public class TestSuiteServices {
 	}
 
 	// HTTP GET request
-	public String sendGet(TestCase testCase, String output) throws Exception {
-
+	public String sendGet(TestCase testCase, TestCaseResult caseResult) throws Exception {
 		String url = testCase.getUrl();
 
 		URL obj = new URL(url);
@@ -196,8 +199,8 @@ public class TestSuiteServices {
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
 		System.out.println("Response Code : " + responseCode);
-		output += "\nSending 'POST' request to URL : " + testCase.getUrl();
-		output += "\nResponse Code : " + responseCode;
+		caseResult.setUrl(testCase.getUrl());
+		caseResult.setStatus(responseCode);
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
@@ -209,12 +212,13 @@ public class TestSuiteServices {
 
 		// print result
 		System.out.println(response.toString());
-		output += "\nResponse is : " + response.toString();
+		caseResult.setResponseBody(response.toString());
 		return response.toString();
 
 	}
 
-	public String sendPost(TestCase testCase, HashMap<String, String> runtimes, String output) throws Exception {
+	public String sendPost(TestCase testCase, HashMap<String, String> runtimes, TestCaseResult caseResult)
+			throws Exception {
 		URL obj = new URL(testCase.getUrl());
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		// add reuqest header
@@ -234,9 +238,8 @@ public class TestSuiteServices {
 		System.out.println("\nSending 'POST' request to URL : " + testCase.getUrl());
 		System.out.println("Post parameters : " + body);
 		System.out.println("Response Code : " + responseCode);
-		output += "\nSending 'POST' request to URL : " + testCase.getUrl();
-		output += "\nPost parameters : " + body;
-		output += "\nResponse Code : " + responseCode;
+		caseResult.setUrl(testCase.getUrl());
+		caseResult.setStatus(responseCode);
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
@@ -248,7 +251,7 @@ public class TestSuiteServices {
 
 		// print result
 		System.out.println(response.toString());
-		output += "\nResponse is : " + response.toString();
+		caseResult.setResponseBody(response.toString());
 		return response.toString();
 	}
 
@@ -269,11 +272,10 @@ public class TestSuiteServices {
 		return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
 	}
 
-	public String sendPut(TestCase testCase, HashMap<String, String> runtimes, String output) throws Exception {
-
+	public String sendPut(TestCase testCase, HashMap<String, String> runtimes, TestCaseResult caseResult)
+			throws Exception {
 		URL obj = new URL(testCase.getUrl());
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
 		// add reuqest header
 		con.setRequestMethod("PUT");
 		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -286,9 +288,8 @@ public class TestSuiteServices {
 		System.out.println("\nSending 'PUT' request to URL : " + testCase.getUrl());
 		System.out.println("Post parameters : " + body);
 		System.out.println("Response Code : " + responseCode);
-		output += "\nSending 'POST' request to URL : " + testCase.getUrl();
-		output += "\nPost parameters : " + body;
-		output += "\nResponse Code : " + responseCode;
+		caseResult.setUrl(testCase.getUrl());
+		caseResult.setStatus(responseCode);
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
@@ -297,10 +298,9 @@ public class TestSuiteServices {
 			response.append(inputLine);
 		}
 		in.close();
-
 		// print result
 		System.out.println(response.toString());
-		output += "\nResponse is : " + response.toString();
+		caseResult.setResponseBody(response.toString());
 		return response.toString();
 
 	}

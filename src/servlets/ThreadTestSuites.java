@@ -1,28 +1,25 @@
 package servlets;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
 
-import services.TestSuiteServices;
-import testCasePOJO.TestSuite;
+import threadedTestSuites.ThreadedTestSuiteServices;
 
 /**
- * Servlet implementation class RunTestSuite
+ * Servlet implementation class ThreadTestSuites
  */
-@WebServlet("/RunTestSuite")
-public class RunTestSuite extends HttpServlet {
+@WebServlet("/ThreadTestSuites")
+public class ThreadTestSuites extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public RunTestSuite() {
+	public ThreadTestSuites() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -33,21 +30,10 @@ public class RunTestSuite extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		TestSuiteServices services = new TestSuiteServices();
-		String testSuiteId = request.getParameter("testSuiteId");
-		TestSuite testSuite = null;
-		try {
-			testSuite = services.getTestSuite(Integer.parseInt(testSuiteId));
-		} catch (NumberFormatException | JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			services.runTestSuite(testSuite);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		int testSuiteId = Integer.parseInt(request.getParameter("testSuiteId"));
+		int threads = Integer.parseInt(request.getParameter("threads"));
+		String output = new ThreadedTestSuiteServices().runTestSuiteThreads(testSuiteId, threads);
+		response.getWriter().append(output);
 	}
 
 	/**

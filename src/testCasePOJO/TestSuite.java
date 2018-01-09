@@ -14,7 +14,6 @@ public class TestSuite {
 	private RuntimeConstants runtimeConstant;
 	private RuntimeVariables runtimeVariable;
 	private String name;
-	private HashMap<String, String> response;
 
 	public int getId() {
 		return id;
@@ -62,14 +61,6 @@ public class TestSuite {
 
 	public void setThreadable(boolean isThreadable) {
 		this.isThreadable = isThreadable;
-	}
-
-	public HashMap<String, String> getResponse() {
-		return response;
-	}
-
-	public void setResponse(HashMap<String, String> response) {
-		this.response = response;
 	}
 
 }

@@ -23,7 +23,6 @@ import testCasePOJO.PossibleRuntimeVariables;
 import testCasePOJO.RuntimeConstants;
 import testCasePOJO.RuntimeVariables;
 import testCasePOJO.TestCase;
-import testCasePOJO.TestCaseURL;
 import testCasePOJO.TestSuite;
 
 public class MainAbhinav {
@@ -32,7 +31,7 @@ public class MainAbhinav {
 		JAXBContext context = JAXBContext.newInstance(TestSuite.class);
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.marshal(createResetPasswordTestSuite, System.out);
-		//new MainAbhinav().runTestSuite(createResetPasswordTestSuite);
+		// new MainAbhinav().runTestSuite(createResetPasswordTestSuite);
 	}
 
 	private void runTestSuite(TestSuite testSuite) throws Exception {
