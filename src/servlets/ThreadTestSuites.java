@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
+import resultPOJO.TestSuiteResult;
 import threadedTestSuites.ThreadedTestSuiteServices;
 
 /**
@@ -32,8 +35,8 @@ public class ThreadTestSuites extends HttpServlet {
 			throws ServletException, IOException {
 		int testSuiteId = Integer.parseInt(request.getParameter("testSuiteId"));
 		int threads = Integer.parseInt(request.getParameter("threads"));
-		String output = new ThreadedTestSuiteServices().runTestSuiteThreads(testSuiteId, threads);
-		response.getWriter().append(output);
+		TestSuiteResult testSuiteResult = new ThreadedTestSuiteServices().runTestSuiteThreads(testSuiteId, threads);
+		response.getWriter().append(new Gson().toJson(testSuiteResult));
 	}
 
 	/**

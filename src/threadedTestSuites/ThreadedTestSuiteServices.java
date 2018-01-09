@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.Gson;
+
 import resultPOJO.TestCaseResult;
 import resultPOJO.TestSuiteResult;
 import services.TestSuiteServices;
@@ -66,6 +68,8 @@ public class ThreadedTestSuiteServices {
 			System.out.println(iterable_element.getTimeTaken());
 			System.out.println(iterable_element.getResponseBody());
 		}
+		System.out.println("<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>");
+		System.out.println(new Gson().toJson(testSuiteResult));
 		return testSuiteResult;
 	}
 

@@ -1,5 +1,7 @@
 package resultPOJO;
 
+import java.util.ArrayList;
+
 public class TestCaseResult {
 	String url;
 	String threadName;
@@ -7,6 +9,7 @@ public class TestCaseResult {
 	long timeTaken;
 	String responseBody;
 	String output;
+	ArrayList<Evaluation> evaluations;
 
 	public String getUrl() {
 		return url;
@@ -54,6 +57,14 @@ public class TestCaseResult {
 
 	public void setOutput(String output) {
 		this.output = output;
+	}
+
+	public ArrayList<Evaluation> getEvaluations() {
+		return evaluations;
+	}
+
+	public void setEvaluations(ArrayList<Evaluation> evaluations) {
+		this.evaluations = evaluations;
 	}
 
 }

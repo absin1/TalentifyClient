@@ -22,7 +22,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import contants.TalentifyClientsConstants;
+import resultPOJO.Evaluation;
 import resultPOJO.TestCaseResult;
+import resultPOJO.TestSuiteResult;
 import testCasePOJO.Evaluator;
 import testCasePOJO.MapElements;
 import testCasePOJO.PossibleRuntimeVariables;
@@ -32,6 +34,18 @@ import testCasePOJO.TestCase;
 import testCasePOJO.TestSuite;
 
 public class TestSuiteServices {
+	public TestSuiteResult runTestSuiteById(int testSuiteId) throws JAXBException, Exception {
+		ArrayList<TestCaseResult> testCaseResults = new ArrayList<>();
+		TestSuiteResult testSuiteResult = new TestSuiteResult();
+		testSuiteResult.setTestSuiteId(testSuiteId);
+		testSuiteResult.setTestCaseResults(testCaseResults);
+		TestCaseResult caseResult = new TestCaseResult();
+		caseResult.setThreadName(Thread.currentThread().getName());
+		new TestSuiteServices().runTestSuite(new TestSuiteServices().getTestSuite(testSuiteId), caseResult);
+		testSuiteResult.getTestCaseResults().add(caseResult);
+		return testSuiteResult;
+	}
+
 	public void runTestSuite(TestSuite testSuite, TestCaseResult caseResult) throws Exception {
 		HashMap<String, String> runtimes = getRuntimeVariablesConstants(testSuite);
 		for (TestCase testCase : testSuite.getTestCase()) {
@@ -80,12 +94,15 @@ public class TestSuiteServices {
 			System.out.println("This request method " + testCase.getType() + " has no implementation till now");
 			break;
 		}
-		evaluate(testCase, response, runtimes);
+		evaluate(testCase, response, runtimes, caseResult);
 		long endTime = System.currentTimeMillis();
 		caseResult.setTimeTaken((endTime - startTime));
 	}
 
-	private void evaluate(TestCase testCase, String response, HashMap<String, String> runtimes) {
+	private void evaluate(TestCase testCase, String response, HashMap<String, String> runtimes,
+			TestCaseResult caseResult) {
+		boolean pass = true;
+		ArrayList<Evaluation> evaluations = new ArrayList<>();
 		JsonParser jsonParser = new JsonParser();
 		JsonElement responseElement = jsonParser.parse(response);
 		try {
@@ -93,9 +110,27 @@ public class TestSuiteServices {
 				String key = evaluators.getKey();
 				String expectedValue = runtimes.get(evaluators.getValue());
 				String responseValue = responseElement.getAsJsonObject().get(key).getAsString();
-				System.out.println("The expected value " + expectedValue + " of key " + key + " matches response value "
-						+ responseValue);
+				Evaluation evaluation = new Evaluation();
+				if (expectedValue.equalsIgnoreCase(responseValue)) {
+					String string = "The expected value " + expectedValue + " of key " + key
+							+ " matches response value " + responseValue;
+					evaluation.setBody(string);
+					System.out.println(string);
+
+				} else {
+					pass = false;
+					String string = "The expected value " + expectedValue + " of key " + key
+							+ " DOES NOT match response value " + responseValue;
+					System.out.println(string);
+					evaluation.setBody(string);
+				}
+				evaluations.add(evaluation);
 			}
+			caseResult.setEvaluations(evaluations);
+			if (!pass)
+				caseResult.setOutput("Failed");
+			else
+				caseResult.setOutput("Passed");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
