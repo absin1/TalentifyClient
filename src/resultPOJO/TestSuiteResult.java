@@ -5,6 +5,15 @@ import java.util.ArrayList;
 public class TestSuiteResult {
 	int testSuiteId;
 	ArrayList<TestCaseResult> testCaseResults;
+	String threadName;
+
+	public String getThreadName() {
+		return threadName;
+	}
+
+	public void setThreadName(String threadName) {
+		this.threadName = threadName;
+	}
 
 	public int getTestSuiteId() {
 		return testSuiteId;

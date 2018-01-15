@@ -117,7 +117,7 @@ public class MainAbhinav {
 		constants.setConstants(resetPasswordSuiteConstants);
 		RuntimeVariables runtimeVariable = new RuntimeVariables();
 		ArrayList<MapElements> vars = new ArrayList<>();
-		MapElements e4 = (new MapElements("password", PossibleRuntimeVariables.randomString));
+		MapElements e4 = (new MapElements("password", PossibleRuntimeVariables.RanAlphaNum));
 		vars.add(e4);
 		runtimeVariable.setVars(vars);
 

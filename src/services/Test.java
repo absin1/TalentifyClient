@@ -6,6 +6,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.UUID;
+
+import com.github.javafaker.Faker;
 
 public class Test {
 
@@ -13,6 +18,18 @@ public class Test {
 
 	public static void main(String[] args) throws Exception {
 
+		// sendingTestRequests();
+		Faker faker = new Faker();
+		int i = 0;
+		HashSet<String> emails = new HashSet<>();
+		while (i < 100) {
+			i++;
+			System.out.println(faker.name().firstName());
+		}
+
+	}
+
+	private static void sendingTestRequests() throws Exception {
 		Test http = new Test();
 		long now = System.currentTimeMillis();
 		// System.out.println("Testing 1 - Send Http GET request");
@@ -26,7 +43,6 @@ public class Test {
 		http.sendPut("http://localhost:8080/t2c/user/password/reset", "userId=777&password=test123");
 		// http.sendPost1();
 		System.out.println((System.currentTimeMillis() - now) + " milliseconds were taken by this request");
-
 	}
 
 	// HTTP GET request

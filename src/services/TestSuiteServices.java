@@ -39,17 +39,18 @@ public class TestSuiteServices {
 		TestSuiteResult testSuiteResult = new TestSuiteResult();
 		testSuiteResult.setTestSuiteId(testSuiteId);
 		testSuiteResult.setTestCaseResults(testCaseResults);
-		TestCaseResult caseResult = new TestCaseResult();
-		caseResult.setThreadName(Thread.currentThread().getName());
-		new TestSuiteServices().runTestSuite(new TestSuiteServices().getTestSuite(testSuiteId), caseResult);
-		testSuiteResult.getTestCaseResults().add(caseResult);
+
+		new TestSuiteServices().runTestSuite(new TestSuiteServices().getTestSuite(testSuiteId), testSuiteResult);
 		return testSuiteResult;
 	}
 
-	public void runTestSuite(TestSuite testSuite, TestCaseResult caseResult) throws Exception {
+	public void runTestSuite(TestSuite testSuite, TestSuiteResult testSuiteResult) throws Exception {
 		HashMap<String, String> runtimes = getRuntimeVariablesConstants(testSuite);
 		for (TestCase testCase : testSuite.getTestCase()) {
+			TestCaseResult caseResult = new TestCaseResult();
 			runTestCase(testCase, runtimes, caseResult);
+			caseResult.setThreadName(Thread.currentThread().getName());
+			testSuiteResult.getTestCaseResults().add(caseResult);
 		}
 	}
 
@@ -165,7 +166,7 @@ public class TestSuiteServices {
 		constants.setConstants(resetPasswordSuiteConstants);
 		RuntimeVariables runtimeVariable = new RuntimeVariables();
 		ArrayList<MapElements> vars = new ArrayList<>();
-		MapElements e4 = (new MapElements("password", PossibleRuntimeVariables.randomString));
+		MapElements e4 = (new MapElements("password", PossibleRuntimeVariables.RanAlphaNum));
 		vars.add(e4);
 		runtimeVariable.setVars(vars);
 
@@ -230,7 +231,8 @@ public class TestSuiteServices {
 
 		// add request header
 		// con.setRequestProperty("User-Agent", USER_AGENT);
-
+		con.setRequestProperty("Content-Encoding", "gzip");
+		con.setConnectTimeout(100000000);
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
 		System.out.println("Response Code : " + responseCode);
@@ -247,7 +249,7 @@ public class TestSuiteServices {
 
 		// print result
 		System.out.println(response.toString());
-		caseResult.setResponseBody(response.toString());
+		// caseResult.setResponseBody(response.toString());
 		return response.toString();
 
 	}
@@ -295,9 +297,9 @@ public class TestSuiteServices {
 		if (testCase.getBodyType().equalsIgnoreCase("keyValue")) {
 			StringBuilder result = new StringBuilder();
 			for (MapElements entry : testCase.getBodyKeys()) {
-				result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+				result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
 				result.append("=");
-				result.append(URLEncoder.encode(runtimes.get(entry.getKey()), "UTF-8"));
+				result.append(URLEncoder.encode(runtimes.get(entry.getValue()), "UTF-8"));
 				result.append("&");
 			}
 			resultString = result.toString();
