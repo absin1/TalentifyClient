@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testSuite>
+   <id>5</id>
+   <name>Social Signup-Login</name>
+   
+   <runtimeVariable>
+       <vars>
+         <key>EMAIL</key>
+         <value>$$RanEmail$$</value>
+      </vars>	  
+      <vars>
+         <key>PASSWORD</key>
+         <value>$$RanAlphaNum$$</value>
+      </vars>
+       <vars>
+         <key>NAME</key>
+         <value>$$RanName$$</value>
+      </vars>
+       <vars>
+         <key>SOCIALMEDIA</key>
+         <value>$$RanSocialMedia$$</value>
+      </vars>
+<!--  email: xyz@xyxz.com,password:test123,name:xyz,socialMedia:GOOGLE -->
+   </runtimeVariable>
+   <testCase>
+      <bodyKeys>
+         <key>email</key>
+         <value>EMAIL</value>
+      </bodyKeys>
+      <bodyKeys>
+         <key>password</key>
+         <value>PASSWORD</value>
+      </bodyKeys>
+      <bodyKeys>
+         <key>name</key>
+         <value>NAME</value>
+      </bodyKeys>
+      <bodyKeys>
+         <key>socialMedia</key>
+         <value>SOCIALMEDIA</value>
+      </bodyKeys>
+      <bodyType>keyValue</bodyType>
+	  <evaluator>
+         <mapElementKeys>
+            <key>email</key>
+            <value>EMAIL</value>
+         </mapElementKeys>
+        	 <mapElementKeys>
+            <key>password</key>
+            <value>PASSWORD</value>
+         </mapElementKeys>
+	  </evaluator>
+      <id>1</id>
+      <type>POST</type>
+      <url>http://localhost:8080/t2c/auth/login/social</url>
+   </testCase>
+   <threadable>false</threadable>
+</testSuite>

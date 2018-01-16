@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testSuite>
+   <id>1</id>
+   <name>resetPassWordLogin</name>
+   <runtimeConstant>
+      <constants>
+         <key>userId</key>
+         <value>777</value>
+      </constants>
+      <constants>
+         <key>authenticationToken</key>
+         <value>7CSptTn0PzxPsOqw0bOn</value>
+      </constants>
+      <constants>
+         <key>email</key>
+         <value>abhinav1@istarindia.com</value>
+      </constants>
+	  <constants>
+        <key>password</key>
+         <value>b9198f79-f42f-4e7e-9392-b34d89b505ac</value>
+      </constants>
+   </runtimeConstant>
+   
+   <testCase>
+      <bodyKeys>
+         <key>email</key>
+         <value>email</value>
+      </bodyKeys>
+      <bodyKeys>
+         <key>password</key>
+         <value>password</value>
+      </bodyKeys>
+      <bodyType>keyValue</bodyType>
+      <evaluator>
+         <mapElementKeys>
+            <key>id</key>
+            <value>userId</value>
+         </mapElementKeys>
+         
+         <mapElementKeys>
+            <key>email</key>
+            <value>email</value>
+         </mapElementKeys>
+      </evaluator>
+      <id>0</id>
+      <type>POST</type>
+      <url>http://localhost:8080/t2c/auth/login</url>
+   </testCase>
+   <threadable>false</threadable>
+</testSuite>

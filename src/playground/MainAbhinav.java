@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 import testCasePOJO.Evaluator;
 import testCasePOJO.MapElements;
 import testCasePOJO.PossibleRuntimeVariables;
+import testCasePOJO.ResponseAddonConstants;
 import testCasePOJO.RuntimeConstants;
 import testCasePOJO.RuntimeVariables;
 import testCasePOJO.TestCase;
@@ -169,7 +170,13 @@ public class MainAbhinav {
 		resetPassword.setBodyType("keyValue");
 		resetPassword.setUrl("http://localhost:8080/t2c/user/password/reset");
 		resetPassword.setType("PUT");
+		ResponseAddonConstants addonConstants = new  ResponseAddonConstants();
+		ArrayList<MapElements> addonConstants1 = new ArrayList<>();
+		MapElements e = new MapElements("asasasa", null);
+		addonConstants1.add(e);
+		addonConstants.setAddonConstants(addonConstants1 );
 		// resetPassword.setEvaluator(resetPasswordEvaluator);
+		resetPassword.setAddonConstants(addonConstants );
 		return resetPassword;
 	}
 

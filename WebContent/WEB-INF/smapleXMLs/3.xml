@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testSuite>
+   <id>3</id>
+   <name>googleCloudComplex</name>
+   <testCase>
+      <id>3</id>
+      <type>GET</type>
+      <url>http://35.200.255.130/istar/rest/user/3658/complex</url>
+   </testCase>
+   <threadable>true</threadable>
+</testSuite>

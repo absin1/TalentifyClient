@@ -18,7 +18,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.json.JSONArray;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import contants.TalentifyClientsConstants;
@@ -80,6 +82,7 @@ public class TestSuiteServices {
 			throws Exception {
 		long startTime = System.currentTimeMillis();
 		String response = null;
+		modifyURL(testCase, runtimes);
 		switch (testCase.getType()) {
 		case "POST":
 			response = sendPost(testCase, runtimes, caseResult);
@@ -95,9 +98,43 @@ public class TestSuiteServices {
 			System.out.println("This request method " + testCase.getType() + " has no implementation till now");
 			break;
 		}
-		evaluate(testCase, response, runtimes, caseResult);
+		if (caseResult.getStatus() == 200) {
+			evaluate(testCase, response, runtimes, caseResult);
+			computeResponseAddonConstants(testCase, response, runtimes, caseResult);
+		}
 		long endTime = System.currentTimeMillis();
 		caseResult.setTimeTaken((endTime - startTime));
+	}
+
+	private void modifyURL(TestCase testCase, HashMap<String, String> runtimes) {
+		if (testCase.getUrl().contains("$")) {
+			String key = testCase.getUrl().split("\\$")[1];
+			String url = testCase.getUrl().replaceAll("\\$" + key + "\\$", runtimes.get(key));
+			System.out.println("Modified URL >>> " + url);
+			testCase.setUrl(url);
+		}
+	}
+
+	private void computeResponseAddonConstants(TestCase testCase, String response, HashMap<String, String> runtimes,
+			TestCaseResult caseResult) {
+		try {
+			for (MapElements addonMapElement : testCase.getAddonConstants().getAddonConstants()) {
+				Object searchResponse = searchResponse(addonMapElement.getKey(), response);
+				if (searchResponse != null) {
+					addonMapElement.setValue((String) searchResponse);
+					runtimes.put(addonMapElement.getKey(), addonMapElement.getValue());
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("No addon constants for " + testCase.getId());
+		}
+	}
+
+	private Object searchResponse(String key, String response) {
+		JsonParser jsonParser = new JsonParser();
+		JsonObject responseAsJsonObject = jsonParser.parse(response).getAsJsonObject();
+		return responseAsJsonObject.get(key).getAsString();
 	}
 
 	private void evaluate(TestCase testCase, String response, HashMap<String, String> runtimes,

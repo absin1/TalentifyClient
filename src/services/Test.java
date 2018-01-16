@@ -19,6 +19,22 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 
 		// sendingTestRequests();
+		// faker();
+		String URL = "http://localhost:8080/t2c/user/$USERID$/complex";
+		if (URL.contains("$")) {
+			System.out.println("yes");
+		}
+
+		for (String string : URL.split("\\$")) {
+			System.out.println(string);
+		}
+		String key = URL.split("\\$")[1];
+		String url = URL.replaceAll("\\$" + key + "\\$", "777");
+		System.out.println(url);
+
+	}
+
+	private static void faker() {
 		Faker faker = new Faker();
 		int i = 0;
 		HashSet<String> emails = new HashSet<>();
@@ -26,7 +42,6 @@ public class Test {
 			i++;
 			System.out.println(faker.name().firstName());
 		}
-
 	}
 
 	private static void sendingTestRequests() throws Exception {

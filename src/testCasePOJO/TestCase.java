@@ -23,6 +23,7 @@ public class TestCase {
 	private String bodyType;
 	private String url;
 	private Evaluator evaluator;
+	private ResponseAddonConstants addonConstants;
 
 	public Evaluator getEvaluator() {
 		return evaluator;
@@ -78,6 +79,14 @@ public class TestCase {
 
 	public void setBodyType(String bodyType) {
 		this.bodyType = bodyType;
+	}
+
+	public ResponseAddonConstants getAddonConstants() {
+		return addonConstants;
+	}
+
+	public void setAddonConstants(ResponseAddonConstants addonConstants) {
+		this.addonConstants = addonConstants;
 	}
 
 }
